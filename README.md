@@ -1,6 +1,7 @@
 # crBot / цыганский барон у цр
 
-![Screenshot_1](https://user-images.githubusercontent.com/57196133/216812510-2892e407-8235-45ce-af0d-72e3b57bf6a1.png)
+![image](https://user-images.githubusercontent.com/57196133/217259524-3e519da4-4d78-4edc-932e-efbdd759bbed.png)
+
 
 [official blasthack theme](www.blasthack.com)            
 idea-publisher KostLim [profile in blasthack](https://www.blast.hk/members/269820/)     
