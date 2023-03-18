@@ -340,7 +340,7 @@ function imgui.OnDrawFrame()
             imgui.TextQuestion(nil,u8(v.item))
             imgui.NextColumn()
             local int,cost,buy = imgui.ImInt(v.int),imgui.ImInt(v.cost),imgui.ImBool(v.buy)
-            if imgui.Checkbox('buy',buy) then
+            if imgui.Checkbox('buy##'..k,buy) then
                 v.buy = buy.v
                 json.save(j,'[arz]crBot.json')
             end
@@ -358,7 +358,7 @@ function imgui.OnDrawFrame()
                 end
                 imgui.PopItemWidth(2)
                 imgui.SameLine()
-                if imgui.Button('remove') then
+                if imgui.Button('remove##'..k) then
                     table.remove(j.bot.items,k)
                     json.save(j,'[arz]crBot.json')
                 end
@@ -631,7 +631,7 @@ function imgui.OnDrawFrame()
                             end
                             imgui.PopItemWidth(2)
                             imgui.SameLine()
-                            if imgui.Button('remove') then
+                            if imgui.Button('remove##'..k) then
                                 table.remove(j.bot.items,k)
                                 json.save(j,'[arz]crBot.json')
                             end
