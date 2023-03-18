@@ -380,7 +380,7 @@ function imgui.OnDrawFrame()
             u8'О скрипте',
             u8'Телеграм',
             u8'Скупка вещей',
-            u8'Пиалки',
+            u8'Лавки',
         }
         imgui.BeginChild('buttons',imgui.ImVec2(150,400),false)
         for k,v in ipairs(b) do
@@ -847,7 +847,7 @@ function imgui.OnDrawFrame()
 
             imgui.PushFont(arial[18])
             imgui.SetCursorPos(imgui.ImVec2(230-imgui.CalcTextSize(u8'Вход на ЦР').x/2,360))
-            imgui.Text(u8'Вход на ЦР')
+            imgui.Text(u8'ХУЙ')
             imgui.PopFont()
 
         end--active
@@ -858,7 +858,25 @@ function imgui.OnDrawFrame()
         imgui.Text('[arz]crBot')
         imgui.PopFont()
         if update ~= nil and update.version ~= nil then
-         downloadUrlToFile(
+            imgui.SetCursorPos(imgui.ImVec2(imgui.GetWindowSize().x/2- imgui.CalcTextSize(u8"Вышло обновление!").x/2,1))
+            imgui.PushFont(arial[23])
+            imgui.TextColored(0xff4275d1,u8'Вышло обновление!')
+            imgui.PopFont()
+            imgui.SameLine()
+            imgui.SetCursorPosY(3)
+
+            imgui.PushFont(arial[15])
+            if imgui.Button(u8'Подробнее') then
+                imgui.OpenPopup(u8'Подробнее об обновлении на версию '..update.version)
+            end
+            imgui.PopFont()
+
+            if imgui.BeginPopupModal(u8'Подробнее об обновлении на версию '..update.version,nil,64+1) then
+                for l in update.upd:gmatch('[^\n]+') do
+                    imgui.Text(u8(l))
+                end
+                if imgui.Button(u8'обновиться',imgui.ImVec2(0,20)) then
+                    downloadUrlToFile(
                         'https://raw.githubusercontent.com/Affarsi/CR_bot/main/%5Barz%5DcrBot.lua',
                         thisScript().path,
                         function(id,status,_,_)
@@ -868,6 +886,12 @@ function imgui.OnDrawFrame()
                             end
                         end
                     )
+                end
+                imgui.SameLine()
+                if imgui.Button(u8'та нахой оно мне нада',imgui.ImVec2(0,20)) then
+                    imgui.CloseCurrentPopup()
+                end
+                imgui.EndPopup()
             end
 
         end
