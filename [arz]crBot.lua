@@ -380,7 +380,7 @@ function imgui.OnDrawFrame()
             u8'О скрипте',
             u8'Телеграм',
             u8'Скупка вещей',
-            u8'Лавки',
+            u8'Лавки1',
         }
         imgui.BeginChild('buttons',imgui.ImVec2(150,400),false)
         for k,v in ipairs(b) do
@@ -875,7 +875,7 @@ function imgui.OnDrawFrame()
                 for l in update.upd:gmatch('[^\n]+') do
                     imgui.Text(u8(l))
                 end
-                if imgui.Button(u8'обновиться',imgui.ImVec2(0,20)) then
+                if imgui.Button(u8'Согласен',imgui.ImVec2(0,20)) then
                     downloadUrlToFile(
                         'https://raw.githubusercontent.com/Affarsi/CR_bot/main/%5Barz%5DcrBot.lua',
                         thisScript().path,
@@ -888,7 +888,7 @@ function imgui.OnDrawFrame()
                     )
                 end
                 imgui.SameLine()
-                if imgui.Button(u8'та нахой оно мне нада',imgui.ImVec2(0,20)) then
+                if imgui.Button(u8'Отмена',imgui.ImVec2(0,20)) then
                     imgui.CloseCurrentPopup()
                 end
                 imgui.EndPopup()
