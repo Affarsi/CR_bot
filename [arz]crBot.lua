@@ -1,5 +1,5 @@
 script_name('[arz]crBot')
-script_version(3.00)
+script_version(2.00)
 
 require 'moonloader'
 requests = require 'requests'
@@ -168,7 +168,6 @@ function main()
                         thisScript().path,
                         function(id,status,_,_)
                             if status == 58 then
-                                sampAddChatMessage('{0CC726}Успешно{cccccc} установлено обновление! Актуальаня версия загружена!')
                                 thisScript():reload()
                             end
                         end
