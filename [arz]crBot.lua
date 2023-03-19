@@ -847,7 +847,7 @@ function imgui.OnDrawFrame()
 
             imgui.PushFont(arial[18])
             imgui.SetCursorPos(imgui.ImVec2(230-imgui.CalcTextSize(u8'¬ход на ÷–').x/2,360))
-            imgui.Text(u8'’”…')
+            imgui.Text(u8'¬ход на ÷–')
             imgui.PopFont()
 
         end--active
