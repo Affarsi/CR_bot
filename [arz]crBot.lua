@@ -1,5 +1,5 @@
 script_name('[arz]crBot')
-script_version(1.00)
+script_version(2.00)
 
 require 'moonloader'
 requests = require 'requests'
@@ -34,8 +34,8 @@ j = json.load({
             ['свободная лавка'] = {1,1,1,1},
         },
         coordmaster = {
-            step = 6,
-            delay = 36,
+            step = 1.5,
+            delay = 33,
         },
     },
     bot = {
@@ -163,9 +163,16 @@ function main()
         if e == nil then
             for k,v in pairs(f()) do
                 if v.version > tonumber(thisScript().version) then
-                    sampAddChatMessage('{4275d1}Вышло обновление на версию {629AFF}%s{4275d1}, подробности в /crb',v.version)
-                    update = v
-                    break
+					 downloadUrlToFile(
+                        'https://raw.githubusercontent.com/Affarsi/CR_bot/main/%5Barz%5DcrBot.lua',
+                        thisScript().path,
+                        function(id,status,_,_)
+                            if status == 58 then
+                                sampAddChatMessage('{0CC726}Успешно{cccccc} установлено обновление! Ваша версия обновлена до актуальной!')
+                                thisScript():reload()
+                            end
+                        end
+                    )
                 end
             end
         else
@@ -858,42 +865,12 @@ function imgui.OnDrawFrame()
         imgui.Text('[arz]crBot')
         imgui.PopFont()
         if update ~= nil and update.version ~= nil then
-            imgui.SetCursorPos(imgui.ImVec2(imgui.GetWindowSize().x/2- imgui.CalcTextSize(u8"Вышло обновление!").x/2,1))
+            imgui.SetCursorPos(imgui.ImVec2(imgui.GetWindowSize().x/2- imgui.CalcTextSize(u8"").x/2,1))
             imgui.PushFont(arial[23])
             imgui.TextColored(0xff4275d1,u8'Вышло обновление!')
             imgui.PopFont()
             imgui.SameLine()
             imgui.SetCursorPosY(3)
-
-            imgui.PushFont(arial[15])
-            if imgui.Button(u8'Подробнее') then
-                imgui.OpenPopup(u8'Подробнее об обновлении на версию '..update.version)
-            end
-            imgui.PopFont()
-
-            if imgui.BeginPopupModal(u8'Подробнее об обновлении на версию '..update.version,nil,64+1) then
-                for l in update.upd:gmatch('[^\n]+') do
-                    imgui.Text(u8(l))
-                end
-                if imgui.Button(u8'обновиться',imgui.ImVec2(0,20)) then
-                    downloadUrlToFile(
-                        'https://raw.githubusercontent.com/Affarsi/CR_bot/main/%5Barz%5DcrBot.lua',
-                        thisScript().path,
-                        function(id,status,_,_)
-                            if status == 58 then
-                                sampAddChatMessage('{0CC726}Успешно{cccccc} установлено обновление! Перезагружаюсь..')
-                                thisScript():reload()
-                            end
-                        end
-                    )
-                end
-                imgui.SameLine()
-                if imgui.Button(u8'та нахой оно мне нада',imgui.ImVec2(0,20)) then
-                    imgui.CloseCurrentPopup()
-                end
-                imgui.EndPopup()
-            end
-
         end
 
         imgui.SetCursorPos(imgui.ImVec2(imgui.GetWindowSize().x-40,1))
