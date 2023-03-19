@@ -34,8 +34,8 @@ j = json.load({
             ['свободная лавка'] = {1,1,1,1},
         },
         coordmaster = {
-            step = 5,
-            delay = 69,
+            step = 6,
+            delay = 36,
         },
     },
     bot = {
