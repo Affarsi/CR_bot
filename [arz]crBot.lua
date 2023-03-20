@@ -1,5 +1,5 @@
 script_name('[arz]crBot')
-script_version(5.00)
+script_version(2.00)
 
 require 'moonloader'
 requests = require 'requests'
