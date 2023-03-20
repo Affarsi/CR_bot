@@ -27,11 +27,11 @@ j = json.load({
     },
     lavki = {
         colors = {
-            ['Г°ГҐГ¤Г ГЄГІГЁГ°ГіГҐГІ'] = {1,0,0,1},
-            ['ГЇГ°Г®Г¤Г ВёГІ'] = {0,1,0,1},
-            ['ГЇГ®ГЄГіГЇГ ГҐГІ'] = {0,1,1,1},
-            ['ГЇГ°Г®Г¤Г ВёГІ ГЁ ГЇГ®ГЄГіГЇГ ГҐГІ'] = {1,0,1,1},
-            ['Г±ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ '] = {1,1,1,1},
+            ['редактирует'] = {1,0,0,1},
+            ['продаёт'] = {0,1,0,1},
+            ['покупает'] = {0,1,1,1},
+            ['продаёт и покупает'] = {1,0,1,1},
+            ['свободная лавка'] = {1,1,1,1},
         },
         coordmaster = {
             step = 5,
@@ -137,7 +137,7 @@ tg = {
 
 window,setPos = imgui.ImBool(false),{0,0}
 
-active = u8'ГЋ Г±ГЄГ°ГЁГЇГІГҐ'
+active = u8'О скрипте'
 font = renderCreateFont('Arial',10,0x4)
 function main()
     while not isSampAvailable() do wait(0) end
@@ -149,7 +149,7 @@ function main()
     for k,v in ipairs(lavki.lavki) do
         v.text = {
             id = 0,
-            text ='Г±ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ !',
+            text ='свободная лавка!',
         }
         v.buy = false
         v.render = false
@@ -163,11 +163,12 @@ function main()
         if e == nil then
             for k,v in pairs(f()) do
                 if v.version > tonumber(thisScript().version) then
-                   downloadUrlToFile(
+                    downloadUrlToFile(
                         'https://raw.githubusercontent.com/Affarsi/CR_bot/main/%5Barz%5DcrBot.lua',
                         thisScript().path,
                         function(id,status,_,_)
                             if status == 58 then
+                                sampAddChatMessage('{0CC726}Успешно{cccccc} установлено обновление! Перезагружаюсь..')
                                 thisScript():reload()
                             end
                         end
@@ -176,7 +177,7 @@ function main()
             end
         else
             print(e)
-            sampAddChatMessage('{CA2222}ГЋГёГЁГЎГЄГ  ГЇГ®Г«ГіГ·ГҐГ­ГЁГї Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГ© Г­Г  Г±ГЄГ°ГЁГЇГІ!')
+            sampAddChatMessage('{CA2222}Ошибка получения обновлений на скрипт!')
         end
         end,nil
     )
@@ -193,15 +194,15 @@ function main()
 
 -- anim.file PED,anim.name FALL_FALL[1130]
         for k,v in ipairs(lavki.lavki) do
-            if v.text.text == 'Г±ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ !' and v.render then
+            if v.text.text == 'свободная лавка!' and v.render then
                 local _,x,y,z = convert3DCoordsToScreenEx(v.pos[1],v.pos[2],MYPOS[3])
                 if z > 1 then
                     local xx,yy = convert3DCoordsToScreen(unpack(MYPOS))
-                    renderFontDrawTextFromAlign(font,'Г‘ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ !',x,y,0xff28ED28,2)
+                    renderFontDrawTextFromAlign(font,'Свободная лавка!',x,y,0xff28ED28,2)
                 end
                 if lavki.coordmaster.buyingClock ~= 0 and v.buy and getDistanceBetweenCoords3d(MYPOS[1], MYPOS[2], MYPOS[3],v.pos[1],v.pos[2],MYPOS[3]) <= 1.5 and not lavki.coordmaster.work  then
                     if os.clock()-lavki.coordmaster.buyingClock <= 10 then
-                        if sampIsDialogActive() and sampGetDialogText():find('^%{%x+%}Г‘ГІГ®ГЁГ¬Г®Г±ГІГј Г Г°ГҐГ­Г¤Г» Г«Г ГўГЄГЁ%: %{%x+%}%$%d+') then
+                        if sampIsDialogActive() and sampGetDialogText():find('^%{%x+%}Стоимость аренды лавки%: %{%x+%}%$%d+') then
                             wait(1)
                             sampCloseCurrentDialogWithButton(1)
                         end
@@ -222,19 +223,19 @@ function main()
                 -- posZ = posZ - 2.1 !
                 for k,v in ipairs(lavki.lavki) do
                     local d = getDistanceBetweenCoords3d(posX, posY, posZ,v.pos[1],v.pos[2],posZ) 
-                    if d <= 1.9 and (text:find("^%w+_%w+ .+ ГІГ®ГўГ Г°$") or text:find('Г°ГҐГ¤Г ГЄГІГЁГ°ГіГҐГІ')) then
+                    if d <= 1.9 and (text:find("^%w+_%w+ .+ товар$") or text:find('редактирует')) then
                         v.text.id = IDTEXT
                         v.text.text = (text):gsub('%{%x+%}','')
-                    elseif d <= 1.9 and v.text.id == IDTEXT and not (text:find("^%w+_%w+ .+ ГІГ®ГўГ Г°$") or text:find('Г°ГҐГ¤Г ГЄГІГЁГ°ГіГҐГІ')) then
+                    elseif d <= 1.9 and v.text.id == IDTEXT and not (text:find("^%w+_%w+ .+ товар$") or text:find('редактирует')) then
                         if v.buy and not lavki.coordmaster.work and lavki.coordmaster.buyingClock == 0 then
                             lavki.coordmaster.buyingClock = os.clock()
                             lavki.coordmaster.work = true
                             coordMaster(v.pos[1],v.pos[2],(posZ-2.1))
                         end
                         if v.render then 
-                            sendTelegramMessage('Г‹Г ГўГЄГ (%s) Г®Г±ГўГ®ГЎГ®Г¤ГЁГ«Г Г±Гј!',k)
+                            sendTelegramMessage('Лавка(%s) освободилась!',k)
                         end
-                        v.text.text = 'Г±ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ !'
+                        v.text.text = 'свободная лавка!'
                         v.text.id = 0
                     end
                 end
@@ -242,7 +243,7 @@ function main()
             end
         end
 
-        if bot.td.page ~= 0 and (not sampTextdrawIsExists(bot.td.page) or sampTextdrawGetString(bot.td.page) ~= gameConvertText('LD_SГђГЂГ‘:whitГҐ','rustogame') ) then
+        if bot.td.page ~= 0 and (not sampTextdrawIsExists(bot.td.page) or sampTextdrawGetString(bot.td.page) ~= gameConvertText('LD_SРАС:whitе','rustogame') ) then
             bot.td = {
                 int = 0,
                 page = 0,
@@ -264,11 +265,11 @@ function main()
 
                 local td = bot.td
 
-                if (text == 'SHOP' or text == gameConvertText('ГЊГЂГѓГЂГ‡Г‰ГЌ', 'rustogame')) then
+                if (text == 'SHOP' or text == gameConvertText('МАГАЗЙН', 'rustogame')) then
                     td.shop[1],td.shop[2] = x,y
                 end
 
-                if td.shop[1] ~= 0 and (text == 'INVENTORY' or text == gameConvertText('Г‰ГЌГ‚Г…ГЌГ’ГЂГђГњ', 'rustogame')) then
+                if td.shop[1] ~= 0 and (text == 'INVENTORY' or text == gameConvertText('ЙНВЕНТАРЬ', 'rustogame')) then
                     td.shop[3],td.shop[4] = x,y
                 end
 
@@ -298,12 +299,12 @@ function main()
                 if td.shop[5] ~= 0 and
                     x >= (td.shop[5]-20) and x <= (td.shop[5]) and
                     y >= (td.shop[6]-10) and
-                    text == gameConvertText('LD_SГђГЂГ‘:whitГҐ','rustogame') 
+                    text == gameConvertText('LD_SРАС:whitе','rustogame') 
                 then
                     td.page = id
                 end
 
-                if bot.bool.v and lavkaOpen() and (text == gameConvertText('Г‘ГЉГ“ГЏГЉГЂ','rustogame')) then
+                if bot.bool.v and lavkaOpen() and (text == gameConvertText('СКУПКА','rustogame')) then
                     sampSendClickTextdraw(id-1)
                     wait(100)
                 end
@@ -339,7 +340,7 @@ function imgui.OnDrawFrame()
     if bot.viewItems.v then
         imgui.SetNextWindowSize(imgui.ImVec2(450,200),2)
         imgui.SetNextWindowPos(imgui.ImVec2(sw/1.3-450/2,sh/2-200/2),2)
-        imgui.Begin(u8'ГЏГ°ГҐГ¤Г¬ГҐГІГ» Г¤Г«Гї Г±ГЄГіГЇГЄГЁ',bot.viewItems)
+        imgui.Begin(u8'Предметы для скупки',bot.viewItems)
         imgui.Columns(2,'items',true)
         for k,v in ipairs(j.bot.items) do
             imgui.Text(u8(v.item))
@@ -358,7 +359,7 @@ function imgui.OnDrawFrame()
                     json.save(j,'[arz]crBot.json')
                 end
                 imgui.SameLine()
-                if imgui.InputInt(u8'ГЄГ®Г«-ГўГ®##'..k,int,0,0) then
+                if imgui.InputInt(u8'кол-во##'..k,int,0,0) then
                     v.int = int.v
                     json.save(j,'[arz]crBot.json')
                 end
@@ -378,15 +379,15 @@ function imgui.OnDrawFrame()
    if window.v then
         -- imgui.SetNextWindowSize(imgui.ImVec2(150,85),1)
         imgui.SetNextWindowPos(imgui.ImVec2(sw/3.5,sh/3.5), imgui.Cond.FirstUseEver)
-        imgui.Begin(u8'Г¶Г»ГЈГ Г­Г±ГЄГЁГ© ГЎГ Г°Г®Г­ Гі Г¶Г°-crBot | '..thisScript().version ,window,32+64+1)
+        imgui.Begin(u8'цыганский барон у цр-crBot | '..thisScript().version ,window,32+64+1)
 
         imgui.NewLine()
 
         local b = {
-            u8'ГЋ Г±ГЄГ°ГЁГЇГІГҐ',
-            u8'Г’ГҐГ«ГҐГЈГ°Г Г¬',
-            u8'Г‘ГЄГіГЇГЄГ  ГўГҐГ№ГҐГ©',
-            u8'Г‹Г ГўГЄГЁ',
+            u8'О скрипте',
+            u8'Телеграм',
+            u8'Скупка вещей',
+            u8'Лавки',
         }
         imgui.BeginChild('buttons',imgui.ImVec2(150,400),false)
         for k,v in ipairs(b) do
@@ -429,16 +430,16 @@ function imgui.OnDrawFrame()
                 sampAddChatMessage(rj.ok and '{13E01D}successfull sending!' or ('{D21C1C}error code %s - %s'):format(rj.error_code,rj.description))
             end
                 imgui.Text(u8[[
-Г‘Г®Г®ГЎГ№ГҐГ­ГЁГҐ ГЇГ°ГЁГµГ®Г¤ГЁГІ..
-ГЉГ®ГЈГ¤Г  Г«Г ГўГЄГ  Г®Г±ГўГ®ГЎГ®Г¤ГЁГ«Г Г±Гј(Г­ГіГ¦Г­Г® Г­Г  Г«Г ГўГЄГі ГўГЄГ«ГѕГ·ГЁГІГј Г°ГҐГ­Г¤ГҐГ°)
-ГЉГ®ГЈГ¤Г  Г±ГЄГ°ГЁГЇГІ Г±Г«Г®ГўГЁГ« Г«Г ГўГЄГі
-ГЉГ®ГЈГ¤Г  ГЎГ®ГІ Г­Г ГёГҐГ« Г®ГЇГ°ГҐГ¤ГҐГ«ГҐГ­Г­Г»Г© ГЇГ°ГҐГ¤Г¬ГҐГІ Гў Г«Г ГўГЄГҐ (ГЁГ«ГЁ ГЄГ®ГЈГ¤Г  ГЄГіГЇГЁГ«)
-ГЉГ®ГЈГ¤Г  ГЎГ®ГІ Г­Г Г·Г Г«/Г±Г¤ГҐГ«Г Г« ГЄГ°ГіГЈ
+Сообщение приходит..
+Когда лавка освободилась(нужно на лавку включить рендер)
+Когда скрипт словил лавку
+Когда бот нашел определенный предмет в лавке (или когда купил)
+Когда бот начал/сделал круг
 ]])
         elseif active == b[3] then
 
 
-            if imgui.Checkbox(u8'Г§Г ГЇГіГ±ГІГЁГІГј ГЎГ®ГІГ ?',bot.bool) then
+            if imgui.Checkbox(u8'запустить бота?',bot.bool) then
                 bot.int = 1
                 bot.td.int = 1
                 bot.viewItems.v = true
@@ -454,7 +455,7 @@ function imgui.OnDrawFrame()
 
                         local t = j.bot.coords[bot.int]
                         if #j.bot.items == 0 then
-                            sendTelegramMessage('ГЃГ»Г«ГЁ ГўГ»ГЄГіГЇГ«ГҐГ­Г» ГўГ±ГҐ ГЇГ°ГҐГ¤Г¬ГҐГІГ»!\nГЃГ®ГІ Г®ГІГЄГ«ГѕГ·ГҐГ­')
+                            sendTelegramMessage('Были выкуплены все предметы!\nБот отключен')
                             break
                         end
 
@@ -463,12 +464,12 @@ function imgui.OnDrawFrame()
                             clock = os.clock()
                             bot.int = 1
                             bot.td.int = 1
-                            sendTelegramMessage('ГЃГ»Г« Г±Г¤ГҐГ«Г Г­ %s ГЄГ°ГіГЈ!\nГ†Г¤ГҐГ¬ %s Г¬ГЁГ­ГіГІ..',c,bot.delay.v)
+                            sendTelegramMessage('Был сделан %s круг!\nЖдем %s минут..',c,bot.delay.v)
                         end
 
                         if clock ~= 0 and ((os.clock()-clock)/60) >= bot.delay.v then
                             clock = 0
-                            sendTelegramMessage('Г‚Г»ГёГ«Г® ГўГ°ГҐГ¬Гї!\nГЌГ Г·ГЁГ­Г Гѕ ГЄГ°ГіГЈ..')
+                            sendTelegramMessage('Вышло время!\nНачинаю круг..')
                         end
 
                         if clock == 0 then
@@ -490,7 +491,7 @@ function imgui.OnDrawFrame()
                                     -- for IDTEXT = 0, 2048 do
                                     --     if sampIs3dTextDefined(IDTEXT) then
                                     --         local text, _, posX, posY, posZ, _, _, _, _ = sampGet3dTextInfoById(IDTEXT)
-                                    --         if text:find('ГЇГ°Г®Г¤Г ВёГІ') and getDistanceBetweenCoords3d(posX, posY, 0,MYPOS[1],MYPOS[2],0) <= 2.5 then
+                                    --         if text:find('продаёт') and getDistanceBetweenCoords3d(posX, posY, 0,MYPOS[1],MYPOS[2],0) <= 2.5 then
                                     --             selling = true
                                     --         end
                                     --     end
@@ -550,25 +551,25 @@ function imgui.OnDrawFrame()
                 end
             end
             imgui.BeginChild('1',imgui.ImVec2(-1,50),true)
-            if imgui.ActiveButton(u8'ГЏГ°ГҐГ¤Г¬ГҐГІГ»',imgui.ImVec2(250-10,-1),bot.listItems) then
+            if imgui.ActiveButton(u8'Предметы',imgui.ImVec2(250-10,-1),bot.listItems) then
                 bot.listItems = true
             end
             imgui.SameLine()
-            if imgui.ActiveButton(u8'ГЊГ Г°ГёГ°ГіГІ ГЎГ®ГІГ ',imgui.ImVec2(250-10,-1),not bot.listItems) then
+            if imgui.ActiveButton(u8'Маршрут бота',imgui.ImVec2(250-10,-1),not bot.listItems) then
                 bot.listItems = false
             end
             imgui.EndChild()
 
             if not bot.listItems then
                 imgui.PushItemWidth(280)
-                if imgui.DragInt(u8'Г—ГҐГ°ГҐГ§ Г±ГЄГ®Г«ГјГЄГ® ГЇГ®ГўГІГ®Г°ГЁГІГј ГЄГ°ГіГЈ?',bot.delay,0.005,1,1000) then;   j.bot.delay = bot.delay.v;  json.save(j,'[arz]crBot.json');   end
+                if imgui.DragInt(u8'Через сколько повторить круг?',bot.delay,0.005,1,1000) then;   j.bot.delay = bot.delay.v;  json.save(j,'[arz]crBot.json');   end
                 imgui.PopItemWidth()
                 imgui.TextQuestion(u8[[
-Г‚Г°ГҐГ¬Гї Гў Г¬ГЁГ­ГіГІГ Гµ!
-ГЏГ®Г±Г«ГҐ Г®ГЄГ®Г­Г·Г Г­ГЁГҐ Г°Г ГЎГ®ГІГ» ГЎГ®ГІГ  - Г·ГҐГ°ГҐГ§ Г±ГЄГ®Г«ГјГЄГ® ГЎГ®ГІ Г±Г­Г®ГўГ  Г­Г Г·Г­ГҐГІ ГЄГ°ГіГЈ
-(Г‚Г® ГўГ°ГҐГ¬Гї ГІГ Г©Г¬ГҐГ°Г  ГЎГ®ГІ Г­ГЁГ·ГҐГЈГ® Г­ГҐ Г¤ГҐГ«Г ГҐГІ)
+Время в минутах!
+После окончание работы бота - через сколько бот снова начнет круг
+(Во время таймера бот ничего не делает)
 ]])
-                if imgui.Button(u8'ГЏГ®Г±ГІГ ГўГЁГІГј ГІГ®Г·ГЄГі Г±ГѕГ¤Г !') then
+                if imgui.Button(u8'Поставить точку сюда!') then
                     -- MYPOS[3] = MYPOS[3]-1.5
                     table.insert(j.bot.coords,{
                         pos = MYPOS,
@@ -579,9 +580,9 @@ function imgui.OnDrawFrame()
                 imgui.SameLine()
                 imgui.Checkbox('lavka?',bot.lavka)
                 imgui.TextQuestion(u8[[
-Г…Г±Г«ГЁ ГЎГ®ГІ ГЇГ®Г¤Г®ГёГҐГ« ГЄ ГЅГІГ®Г© ГІГ®Г·ГЄГҐ ГЁ ГІГіГІ Г±ГІГ®ГЁГІ lavka?=true
-ГІГ® Г±ГЄГ°ГЁГЇГІ ГЎГіГ¤ГҐГІ ГґГ«ГіГ¤ГЁГІГј ГЂГ‹ГњГ’ Г¤Г«Гї Г®ГІГЄГ°Г»ГІГЁГї Г«Г ГўГЄГЁ
-(ГҐГ±Г«ГЁ ГЇГ®ГЎГ«ГЁГ§Г®Г±ГІГЁ Г‘ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ  ГІГ® Г±ГЄГ°ГЁГЇГІ ГҐВё ГЇГ°Г®ГЇГіГ±ГІГЁГІ)]])
+Если бот подошел к этой точке и тут стоит lavka?=true
+то скрипт будет флудить АЛЬТ для открытия лавки
+(если поблизости Свободная лавка то скрипт её пропустит)]])
                 imgui.Separator()
                 for k,v in ipairs(j.bot.coords) do
                     local _,x,y,z = convert3DCoordsToScreenEx(unpack(v.pos))
@@ -604,14 +605,14 @@ function imgui.OnDrawFrame()
                     if imgui.Button(u8'delete##'..k) then;  table.remove(j.bot.coords,k);   json.save(j,'[arz]crBot.json'); end
                 end
             else
-                if imgui.Button(u8'Г•Г®Г·Гі Г®ГЎГ­Г®ГўГЁГІГј ГЇГ°ГҐГ¤Г¬ГҐГІГ»') then
+                if imgui.Button(u8'Хочу обновить предметы') then
                     imgui.OpenPopup('update items')
                 end
-                if imgui.CollapsingHeader(u8'\tГ—ГІГ® Гї Г±ГЄГіГЇГ Гѕ?') then
+                if imgui.CollapsingHeader(u8'\tЧто я скупаю?') then
                     imgui.Columns(2,'my items',true)
-                    imgui.Text(u8'ГЏГ°ГҐГ¤Г¬ГҐГІ')
+                    imgui.Text(u8'Предмет')
                     imgui.NextColumn()
-                    imgui.Text(u8'Г–ГҐГ­Г (Г§Г  1ГёГІ.)-ГЄГ®Г«-ГўГ®')
+                    imgui.Text(u8'Цена(за 1шт.)-кол-во')
                     imgui.Separator()
                     imgui.NextColumn()
                     for k,v in ipairs(j.bot.items) do
@@ -631,7 +632,7 @@ function imgui.OnDrawFrame()
                                 json.save(j,'[arz]crBot.json')
                             end
                             imgui.SameLine()
-                            if imgui.InputInt(u8'ГЄГ®Г«-ГўГ®##'..k,int,0,0) then
+                            if imgui.InputInt(u8'кол-во##'..k,int,0,0) then
                                 v.int = int.v
                                 json.save(j,'[arz]crBot.json')
                             end
@@ -649,18 +650,18 @@ function imgui.OnDrawFrame()
                 end
 
                 if imgui.BeginPopup('update items') then
-                    if imgui.Button(u8'Г—ГҐГ°ГҐГ§ Г±Г Г©ГІ arz-wiki(ГЏГ…ГђГ…Г‡ГЂГЏГ€Г‘Гњ ГЏГђГ…Г„ГЊГ…Г’ГЋГ‚)') then
+                    if imgui.Button(u8'Через сайт arz-wiki(ПЕРЕЗАПИСЬ ПРЕДМЕТОВ)') then
                         local res,er = pcall(requests.get,'https://arz-wiki.com/items/')
                         if not res then
                             sampShowDialog(1,'crBot',(
-    [[Г‘ГЄГ°ГЁГЇГІГі Г­ГҐ ГіГ¤Г Г«Г®Г±Гј ГЇГ®Г«ГіГ·ГЁГІГј ГІГҐГЄГ±ГІ Г± Г±Г Г©ГІГ !
-Г®ГёГЁГЎГЄГ : 
+    [[Скрипту не удалось получить текст с сайта!
+ошибка: 
     <%s>
 
-Г‡Г Г©Г¤ГЁГІГҐ Г­Г  github Г°ГҐГЇГ®Г§ГЁГІГ®Г°ГЁГ© Г±ГЄГ°ГЁГЇГІГ , ГІГ Г¬ Г¤Г®Г«Г¦ГҐГ­ ГЎГ»ГІГј json ГґГ Г©Г«([arz]crBot_Items.json) Г±Г® ГўГ±ГҐГ¬ГЁ ГЇГ°ГҐГ¤Г¬ГҐГІГ Г¬ГЁ
-Г§Г ГЄГЁГ­ГјГІГҐ ГЅГІГ®ГІ json Гў ГЇГ ГЇГЄГі config]]):format(er),'<','>',0)
+Зайдите на github репозиторий скрипта, там должен быть json файл([arz]crBot_Items.json) со всеми предметами
+закиньте этот json в папку config]]):format(er),'<','>',0)
                         else
-                            sampAddChatMessage('ГЏГ Г°Г±ГЁГ­ГЈ ГЇГ°ГҐГ¤Г¬ГҐГІГ®Гў Г­Г Г·Г Г«Г±Гї! Г„Г«Гї {CD1515}Г®ГІГ¬ГҐГ­Г»{cccccc} Г§Г Г¦Г¬ГЁГІГҐ Г¶ГЁГґГ°Гі 0')
+                            sampAddChatMessage('Парсинг предметов начался! Для {CD1515}отмены{cccccc} зажмите цифру 0')
                             crItems = {}
                             local maxPage = 0
                             lua_thread.create(function()
@@ -679,8 +680,8 @@ function imgui.OnDrawFrame()
                                 for page = 1,maxPage do
                                     if isKeyDown(VK_0) then
                                         sampShowDialog(1,'crBot',([[
-ГЏГ Г°Г±ГЁГ­ГЈ ГЎГ»Г« Г®ГІГ¬ГҐГ­ГҐГ­!
-ГЃГ»Г«Г® Г§Г ГЇГЁГ±Г Г­Г® %s ГЇГ°ГҐГ¤Г¬ГҐГІГ®Гў ГЁГ§ %s/%s Г±ГІГ°Г Г­ГЁГ¶]]):format(#crItems,page,maxPage),'<','>',0)
+Парсинг был отменен!
+Было записано %s предметов из %s/%s страниц]]):format(#crItems,page,maxPage),'<','>',0)
                                         break
                                     end
                                     local get = false
@@ -697,21 +698,21 @@ function imgui.OnDrawFrame()
                                     printStringNow('write item #'..#crItems..',page '..page..'/'..maxPage,1000)
                                 end
                                 json.save(crItems,'[arz]crBot_Items.json')
-                                sampAddChatMessage('ГЏГ Г°Г±ГЁГ­ГЈ {0CC726}ГіГ±ГЇГҐГёГ­Г®{cccccc} Г§Г ГўГҐГ°ГёГҐГ­!')
+                                sampAddChatMessage('Парсинг {0CC726}успешно{cccccc} завершен!')
                             end)
                         end
                     end
                 imgui.TextQuestion(u8[[
-Г‘ГЄГ°ГЁГЇГІ ГЇГ Г°Г±ГЁГІ Г±ГІГ°Г Г­ГЁГ¶Г» 'https://arz-wiki.com/items/page/1+/' ГЁ ГЎГҐГ°ГҐГІ Г­Г Г§ГўГ Г­ГЁГҐ ГІГ®ГўГ Г°Г®Гў
-Гў Г®Г¤Г­Г®Г© Г±ГІГ°Г Г­ГЁГ¶ГҐ 30 ГЇГ°ГҐГ¤Г¬ГҐГІГ®Гў
+Скрипт парсит страницы 'https://arz-wiki.com/items/page/1+/' и берет название товаров
+в одной странице 30 предметов
 
-ГўГ°ГҐГ¬Гї ГЇГ Г°Г±ГЁГ­ГЈГ  ГўГ±ГҐГµ Г±ГІГ°Г Г­ГЁГ¶ ГЇГ°ГҐГ¤Г¬ГҐГІГ®Гў Г­Г  arz-wiki Г§Г ГўГЁГ±ГЁГІ Г®ГІ ГўГ ГёГҐГЈГ® ГЁГ­ГІГҐГ°Г­ГҐГІГ 
-(Г±Г Г©ГІ ГўГ®Г§Г¬Г®Г¦Г­Г® Г­ГҐ ГЎГіГ¤ГҐГІ Г°Г ГЎГ®ГІГ ГІГј Гў Г“ГЄГ°Г ГЁГ­ГҐ(Г­Г® Гі Г¬ГҐГ­Гї Г°Г ГЎГ®ГІГ Г«, ГІГіГІ Г§Г ГўГЁГ±ГЁГІ Г®ГІ ГўГ ГёГҐГЈГ® ГЇГ°Г®ГўГ Г©Г¤ГҐГ°Г ))
+время парсинга всех страниц предметов на arz-wiki зависит от вашего интернета
+(сайт возможно не будет работать в Украине(но у меня работал, тут зависит от вашего провайдера))
 ]])
-                    if imgui.Button(u8'Г“Г±ГІГ Г­Г®ГўГЁГІГј json ГЁГ§ github Г°ГҐГЇГ®Г§ГЁГІГ®Г°ГЁГ© Г±ГЄГ°ГЁГЇГІГ ') then
+                    if imgui.Button(u8'Установить json из github репозиторий скрипта') then
                         asyncHttpRequest('GET',
                             'https://raw.githubusercontent.com/Affarsi/CR_bot/main/%5Barz%5DcrBot_Items.json',nil,function(r)
-                                sampAddChatMessage('[arz]crBot_Items.json ГЎГ»Г« {0CC726}ГіГ±ГЇГҐГёГ­Г®{cccccc} ГЇГҐГ°ГҐГ§Г ГЇГЁГ±Г Г­ ГЁГ§ github\'a! Г‘ГЄГ°ГЁГЇГІ ГЎГіГ¤ГҐГІ ГЇГҐГ°ГҐГ§Г ГЈГ°ГіГ¦ГҐГ­..')
+                                sampAddChatMessage('[arz]crBot_Items.json был {0CC726}успешно{cccccc} перезаписан из github\'a! Скрипт будет перезагружен..')
                                 local f = io.open('moonloader/config/[arz]crBot_Items.json','w')
                                 f:write((r.text))
                                 f:close()
@@ -720,9 +721,9 @@ function imgui.OnDrawFrame()
 
                     end
                     imgui.TextQuestion(u8[[
-Г‚Г®Г§Г¬Г®Г¦Г­Г»ГҐ Г­ГҐГ ГЄГІГіГ Г«ГјГ­Г»ГҐ ГІГ®ГўГ Г°Г»!]])
+Возможные неактуальные товары!]])
                     imgui.Text(u8[[
-ГЌГі, ГЁГ«ГЁ ГўГ°ГіГ·Г­ГіГѕ Г¤Г®ГЎГ ГўГЁГІГј ГІГ®ГўГ Г° Гў json(moonloader/config/[arz]crBot_Items.json)..]])
+Ну, или вручную добавить товар в json(moonloader/config/[arz]crBot_Items.json)..]])
                     imgui.EndPopup()
                 end
 
@@ -739,18 +740,18 @@ function imgui.OnDrawFrame()
                             -- imgui.Text(string.rep(' ',(imgui.CalcTextSize(u8(v)).x/2+20) ))
 
                             local int = imgui.ImInt((bot.buy.v and 1 or 0))
-                            imgui.RadioButton(u8'Г—ГҐГЄГ­ГіГІГј Г«ГЁ ГҐГ±ГІГј ГІГ®ГўГ Г° Гў Г«Г ГўГЄГҐ',int,0)
+                            imgui.RadioButton(u8'Чекнуть ли есть товар в лавке',int,0)
                             imgui.SameLine()
                             imgui.Text(string.rep(' ',(imgui.CalcTextSize(u8(v)).x/4) ))
-                            imgui.RadioButton(u8'ГЉГіГЇГЁГІГј ГІГ®ГўГ Г°',int,1)
+                            imgui.RadioButton(u8'Купить товар',int,1)
                             bot.buy.v = (int.v == 1 and true or false)
 
                             if int.v == 1 then
-                                imgui.Text(u8'ГЉГіГЇГЁГІГј ГІГ®ГўГ Г° ГҐГ±Г«ГЁ Г¶ГҐГ­Г  Г­ГЁГ¦ГҐ(<=)')
+                                imgui.Text(u8'Купить товар если цена ниже(<=)')
                                 imgui.SameLine()
                                 imgui.PushItemWidth(150)
-                                imgui.InputInt(u8'(Г¶ГҐГ­Г  Г§Г  Г®Г¤Г­Гі ГёГІГіГЄГі)##cost',bot.cost)
-                                imgui.Text(u8'Г‘ГЄГ®Г«ГјГЄГ® ГЄГіГЇГЁГІГј?')
+                                imgui.InputInt(u8'(цена за одну штуку)##cost',bot.cost)
+                                imgui.Text(u8'Сколько купить?')
                                 imgui.SameLine()
                                 imgui.InputInt(u8'##int',bot.int)
                                 imgui.PopItemWidth(2)
@@ -789,24 +790,24 @@ function imgui.OnDrawFrame()
 
             if imgui.BeginMenu('coordmaster') then
                 imgui.Text(u8[[
-    Г…Г±Г«ГЁ ГЄ ГЇГ°ГҐГ¬ГҐГ°Гі ГўГ» Г±Г¤ГҐГ«Г Г«ГЁ Г­Г  ГЇГ Г°Гі Г«Г ГўГ®ГЄ Г«Г®ГўГ«Гѕ
-    ГІГ® ГҐГ±Г«ГЁ Г«Г ГўГЄГ  Г±Г«ГҐГІГЁГІ ГЁ Г±ГЄГ°ГЁГЇГІ ГіГ±ГЇГҐГёГ­Г® ГҐВё ГЄГіГЇГЁГІ ГўГ±ГҐ Г¤Г°ГіГЈГЁГҐ Г«Г ГўГЄГЁ Г®ГІГЄГ«ГѕГ·Г ГІ Г«Г®ГўГ«Гѕ]])
+    Если к премеру вы сделали на пару лавок ловлю
+    то если лавка слетит и скрипт успешно её купит все другие лавки отключат ловлю]])
                 if imgui.DragFloat('step',lavki.coordmaster.step,0.5,1,10000) then j.lavki.coordmaster.step = lavki.coordmaster.step.v;    json.save(j,'[arz]crBot.json');   end
                 if imgui.DragInt('delay',lavki.coordmaster.delay,0.5,10,10000) then j.lavki.coordmaster.delay = lavki.coordmaster.delay.v;    json.save(j,'[arz]crBot.json');   end
                 imgui.EndMenu()
             end
 
             for k,v in pairs(lavki.lavki) do
-                local r,g,b,a = unpack(j.lavki.colors['Г±ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ '])
+                local r,g,b,a = unpack(j.lavki.colors['свободная лавка'])
                 imgui.SetCursorPos(imgui.ImVec2(v.imgui.x+100,v.imgui.y+40))
-                if v.text.text:find('^%S+ ГЇГ°Г®Г¤Г ВёГІ ГІГ®ГўГ Г°') then
-                    r,g,b,a = unpack(j.lavki.colors['ГЇГ°Г®Г¤Г ВёГІ'])
-                elseif v.text.text:find('^%S+ ГЇГ®ГЄГіГЇГ ГҐГІ ГІГ®ГўГ Г°') then
-                    r,g,b,a = unpack(j.lavki.colors['ГЇГ®ГЄГіГЇГ ГҐГІ'])                
-                elseif v.text.text:find('^%S+ ГЇГ°Г®Г¤Г ВёГІ ГЁ ГЇГ®ГЄГіГЇГ ГҐГІ ГІГ®ГўГ Г°') then
-                    r,g,b,a = unpack(j.lavki.colors['ГЇГ°Г®Г¤Г ВёГІ ГЁ ГЇГ®ГЄГіГЇГ ГҐГІ'])                
-                elseif v.text.text:find('^%S+ Г°ГҐГ¤Г ГЄГІГЁГ°ГіГҐГІ Г±ГЇГЁГ±Г®ГЄ') then
-                    r,g,b,a = unpack(j.lavki.colors['Г°ГҐГ¤Г ГЄГІГЁГ°ГіГҐГІ'])
+                if v.text.text:find('^%S+ продаёт товар') then
+                    r,g,b,a = unpack(j.lavki.colors['продаёт'])
+                elseif v.text.text:find('^%S+ покупает товар') then
+                    r,g,b,a = unpack(j.lavki.colors['покупает'])                
+                elseif v.text.text:find('^%S+ продаёт и покупает товар') then
+                    r,g,b,a = unpack(j.lavki.colors['продаёт и покупает'])                
+                elseif v.text.text:find('^%S+ редактирует список') then
+                    r,g,b,a = unpack(j.lavki.colors['редактирует'])
                 end
                 imgui.PushStyleColor(1,imgui.ImVec4(r,g,b,a))
                 imgui.Text('<>')
@@ -820,7 +821,7 @@ function imgui.OnDrawFrame()
                         lavki.coordmaster.buyingClock = 0
                         lavki.coordmaster.work = false
                         lua_thread.create(function()
-                            if v.buy and not lavki.coordmaster.work and v.text.text == 'Г±ГўГ®ГЎГ®Г¤Г­Г Гї Г«Г ГўГЄГ !' then
+                            if v.buy and not lavki.coordmaster.work and v.text.text == 'свободная лавка!' then
                                 lavki.coordmaster.work = true
                                 lavki.coordmaster.buyingClock = os.clock()
                                 coordMaster(v.pos[1],v.pos[2],17)
@@ -828,9 +829,9 @@ function imgui.OnDrawFrame()
                         end)
                     end
                     imgui.BeginTooltip()
-                    imgui.Text(u8('Г‹Г ГўГЄГ  '..k..'\n'..v.text.text))
-                    imgui.Text(u8(v.render and 'ГђГҐГ­Г¤ГҐГ° ГўГЄГ«ГѕГ·ГҐГ­' or 'ГђГҐГ­Г¤ГҐГ° ГўГ»ГЄГ«ГѕГ·ГҐГ­') ..u8'(Г‹ГЉГЊ)')
-                    imgui.Text(u8(v.buy and 'Г‹Г®ГўГ«Гї ГўГЄГ«ГѕГ·ГҐГ­Г ' or 'Г‹Г®ГўГ«Гї ГўГ»ГЄГ«ГѕГ·ГҐГ­Г ') ..u8'(ГЏГЉГЊ)(Г«Г®ГўГ«Гї ГЄГіГ°Г¤Г¬Г Г±ГІГҐГ°Г®Г¬)')
+                    imgui.Text(u8('Лавка '..k..'\n'..v.text.text))
+                    imgui.Text(u8(v.render and 'Рендер включен' or 'Рендер выключен') ..u8'(ЛКМ)')
+                    imgui.Text(u8(v.buy and 'Ловля включена' or 'Ловля выключена') ..u8'(ПКМ)(ловля курдмастером)')
                     imgui.EndTooltip()
                 end
             end
@@ -852,8 +853,8 @@ function imgui.OnDrawFrame()
             end
 
             imgui.PushFont(arial[18])
-            imgui.SetCursorPos(imgui.ImVec2(230-imgui.CalcTextSize(u8'Г‚ГµГ®Г¤ Г­Г  Г–Гђ').x/2,360))
-            imgui.Text(u8'Г‚ГµГ®Г¤ Г­Г  Г–Гђ')
+            imgui.SetCursorPos(imgui.ImVec2(230-imgui.CalcTextSize(u8'Вход на ЦР').x/2,360))
+            imgui.Text(u8'Вход на ЦР')
             imgui.PopFont()
 
         end--active
@@ -864,28 +865,37 @@ function imgui.OnDrawFrame()
         imgui.Text('[arz]crBot')
         imgui.PopFont()
         if update ~= nil and update.version ~= nil then
-            imgui.SetCursorPos(imgui.ImVec2(imgui.GetWindowSize().x/2- imgui.CalcTextSize(u8"Г‚Г»ГёГ«Г® Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ!").x/2,1))
+            imgui.SetCursorPos(imgui.ImVec2(imgui.GetWindowSize().x/2- imgui.CalcTextSize(u8"Вышло обновление!").x/2,1))
             imgui.PushFont(arial[23])
-            imgui.TextColored(0xff4275d1,u8'Г‚Г»ГёГ«Г® Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ!')
+            imgui.TextColored(0xff4275d1,u8'Вышло обновление!')
             imgui.PopFont()
             imgui.SameLine()
             imgui.SetCursorPosY(3)
 
             imgui.PushFont(arial[15])
-            if imgui.Button(u8'ГЏГ®Г¤Г°Г®ГЎГ­ГҐГҐ') then
-                imgui.OpenPopup(u8'ГЏГ®Г¤Г°Г®ГЎГ­ГҐГҐ Г®ГЎ Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГЁ Г­Г  ГўГҐГ°Г±ГЁГѕ '..update.version)
+            if imgui.Button(u8'Подробнее') then
+                imgui.OpenPopup(u8'Подробнее об обновлении на версию '..update.version)
             end
             imgui.PopFont()
 
-            if imgui.BeginPopupModal(u8'ГЏГ®Г¤Г°Г®ГЎГ­ГҐГҐ Г®ГЎ Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГЁ Г­Г  ГўГҐГ°Г±ГЁГѕ '..update.version,nil,64+1) then
+            if imgui.BeginPopupModal(u8'Подробнее об обновлении на версию '..update.version,nil,64+1) then
                 for l in update.upd:gmatch('[^\n]+') do
                     imgui.Text(u8(l))
                 end
-                if imgui.Button(u8'Г®ГЎГ­Г®ГўГЁГІГјГ±Гї',imgui.ImVec2(0,20)) then
-                    
+                if imgui.Button(u8'обновиться',imgui.ImVec2(0,20)) then
+                    downloadUrlToFile(
+                        'https://raw.githubusercontent.com/Affarsi/CR_bot/main/%5Barz%5DcrBot.lua',
+                        thisScript().path,
+                        function(id,status,_,_)
+                            if status == 58 then
+                                sampAddChatMessage('{0CC726}Успешно{cccccc} установлено обновление! Перезагружаюсь..')
+                                thisScript():reload()
+                            end
+                        end
+                    )
                 end
                 imgui.SameLine()
-                if imgui.Button(u8'ГІГ  Г­Г ГµГ®Г© Г®Г­Г® Г¬Г­ГҐ Г­Г Г¤Г ',imgui.ImVec2(0,20)) then
+                if imgui.Button(u8'та нахой оно мне нада',imgui.ImVec2(0,20)) then
                     imgui.CloseCurrentPopup()
                 end
                 imgui.EndPopup()
@@ -907,31 +917,31 @@ function imgui.OnDrawFrame()
 end
 
 function sampev.onServerMessage(color,text)
-    if text:find('Г‚Г» ГіГ±ГЇГҐГёГ­Г® Г Г°ГҐГ­Г¤Г®ГўГ Г«ГЁ Г«Г ГўГЄГі') and lavki.coordmaster.buyingClock ~= 0 then
+    if text:find('Вы успешно арендовали лавку') and lavki.coordmaster.buyingClock ~= 0 then
         lavki.coordmaster.buyingClock = 0
         lavki.coordmaster.work = false
-        sendTelegramMessage('Г‚Г» ГіГ±ГЇГҐГёГ­Г® Г Г°ГҐГ­Г¤Г®ГўГ Г«ГЁ Г«Г ГўГЄГі!\nГ‹Г®ГўГ«Гї Г®ГІГЄГ«ГѕГ·ГҐГ­Г  Г­Г  ГўГ±ГҐ Г«Г ГўГЄГЁ!')
+        sendTelegramMessage('Вы успешно арендовали лавку!\nЛовля отключена на все лавки!')
         for k,v in ipairs(lavki.lavki) do; v.buy = false;  end
     end
 end
 
 function sampev.onShowDialog(id, style, title, b1, b2, text)
-    if title == '{BFBBBA}' and text:find('^%{%x+%}Г‘ГІГ®ГЁГ¬Г®Г±ГІГј Г Г°ГҐГ­Г¤Г» Г«Г ГўГЄГЁ%: %{%x+%}%$%d+') then
+    if title == '{BFBBBA}' and text:find('^%{%x+%}Стоимость аренды лавки%: %{%x+%}%$%d+') then
 
     end
 
-    if title:find('ГЏГ®ГЄГіГЇГЄГ  ГЇГ°ГҐГ¤Г¬ГҐГІГ ') and lavkaOpen() then
+    if title:find('Покупка предмета') and lavkaOpen() then
     -- if true then
         local item,int,cost = '',0,0
         for l in text:gmatch('[^\n]+') do
             if l:find('^%{%x+%}%W+%: ') and item == '' then
                 item = (l:match('^%{%x+%}%W+%: (.+)')):gsub('%{%x+%}','') 
             end
-            if l:find('^Г‚ Г­Г Г«ГЁГ·ГЁГЁ%: (%d+) ГёГІ%.') and int == 0 then
-                int = tonumber(l:match('^Г‚ Г­Г Г«ГЁГ·ГЁГЁ%: (%d+) ГёГІ%.'))
+            if l:find('^В наличии%: (%d+) шт%.') and int == 0 then
+                int = tonumber(l:match('^В наличии%: (%d+) шт%.'))
             end
-            if l:find('Г‘ГІГ®ГЁГ¬Г®Г±ГІГј%: %$(%S+) Г§Г  (%d+) ГёГІ%.$') and cost == 0 then
-                cost = ((l:match('Г‘ГІГ®ГЁГ¬Г®Г±ГІГј%: %$(%S+) Г§Г  (%d+) ГёГІ%.$')):gsub('%.',''):gsub(',',''))
+            if l:find('Стоимость%: %$(%S+) за (%d+) шт%.$') and cost == 0 then
+                cost = ((l:match('Стоимость%: %$(%S+) за (%d+) шт%.$')):gsub('%.',''):gsub(',',''))
                 cost = tonumber(cost)
             end
         end
@@ -949,14 +959,14 @@ function sampev.onShowDialog(id, style, title, b1, b2, text)
                             sampSendDialogResponse(id,1,_,tostring((v.int > int and int or v.int)))
                         end
                         v.int = v.int - 1
-                        sendTelegramMessage('ГЏГ°ГҐГ¤Г¬ГҐГІ %s ГЎГ»Г« ГЄГіГЇГ«ГҐГ­ Г§Г  %s$(Г§Г  1ГёГІ)\nГ‚Г±ГҐГЈГ® ГЎГ»Г«Г® ГЄГіГЇГ«ГҐГ­Г® %s ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ®,Г®Г±ГІГ Г«Г®Г±Гј %s',item,cost,int,v.int)
+                        sendTelegramMessage('Предмет %s был куплен за %s$(за 1шт)\nВсего было куплено %s количество,осталось %s',item,cost,int,v.int)
                         if v.int == 0 then
-                            sendTelegramMessage('ГЏГ°ГҐГ¤Г¬ГҐГІ %s ГЎГ»Г« ГўГҐГ±Гј ГўГ»ГЄГіГЇГ«ГҐГ­!\n(ГЇГ°ГҐГ¤Г¬ГҐГІ Г¤Г«Гї Г±ГЄГіГЇГЄГЁ ГіГ¤Г Г«ГҐГ­ ГЁГ§ Г±ГЄГ°ГЁГЇГІГ )',item)
+                            sendTelegramMessage('Предмет %s был весь выкуплен!\n(предмет для скупки удален из скрипта)',item)
                             table.remove(j.bot.items,k)
                         end
                         json.save(j,'[arz]crBot.json')
                     elseif not v.buy then
-                        sendTelegramMessage('ГЏГ°ГҐГ¤Г¬ГҐГІ %s ГЎГ»Г« Г­Г Г©Г¤ГҐГ­ Гў Г«Г ГўГЄГҐ Г§Г  %s$(Г§Г  1ГёГІ)\nГ‚Г±ГҐГЈГ® ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  %s',item,cost,int)
+                        sendTelegramMessage('Предмет %s был найден в лавке за %s$(за 1шт)\nВсего количества %s',item,cost,int)
                     end
                 end
             end
