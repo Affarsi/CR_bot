@@ -35,7 +35,7 @@ j = json.load({
         },
         coordmaster = {
             step = 1.5,
-            delay = 33,
+            delay = 50,
         },
     },
     bot = {
